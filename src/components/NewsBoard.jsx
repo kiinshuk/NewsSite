@@ -11,13 +11,13 @@ const NewsBoard = ({ category }) => {
       setError('API key is missing. Please check your .env file.');
       return;
     }
-
-    const url = `https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`;
-
+  
+    const url = `https://news-proxy-server.herokuapp.com/api/news?category=${category}`;
+  
     const fetchArticles = async () => {
       try {
         const response = await fetch(url);
-
+  
         if (!response.ok) {
           if (response.status === 426) {
             setError('Upgrade Required: Please update your API request or protocol.');
@@ -25,7 +25,7 @@ const NewsBoard = ({ category }) => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
         }
-
+  
         const data = await response.json();
         setArticles(data.articles || []);
       } catch (error) {
@@ -33,10 +33,10 @@ const NewsBoard = ({ category }) => {
         console.error('Error fetching news:', error);
       }
     };
-
+  
     fetchArticles();
   }, [category, apiKey]);
-
+  
   return (
     <div style={{ padding: '20px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Verdana, sans-serif' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '24px', color: '#ffcc00', textTransform: 'uppercase', letterSpacing: '2px' }}>
