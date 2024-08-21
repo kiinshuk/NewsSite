@@ -8,15 +8,9 @@ const NewsBoard = ({ category }) => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const apiKey = process.env.REACT_APP_API_KEY;
-        if (!apiKey) {
-          throw new Error('API Key is missing');
-        }
-
-        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`);
+        const response = await fetch(`http://localhost:5000/news?category=${category}`);
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         setArticles(data.articles || []);
