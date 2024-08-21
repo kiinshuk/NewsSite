@@ -4,14 +4,28 @@ import NewsItem from './NewsItem';
 const NewsBoard = ({ category }) => {
   const [articles, setArticles] = useState([]);
   const [error, setError] = useState(null);
+  const apiKey = process.env.REACT_APP_API_KEY;
 
   useEffect(() => {
+    if (!apiKey) {
+      setError('API key is missing. Please check your .env file.');
+      return;
+    }
+
+    const url = `https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`;
+
     const fetchArticles = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/news?category=${category}`);
+        const response = await fetch(url);
+
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          if (response.status === 426) {
+            setError('Upgrade Required: Please update your API request or protocol.');
+          } else {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
         }
+
         const data = await response.json();
         setArticles(data.articles || []);
       } catch (error) {
@@ -21,7 +35,7 @@ const NewsBoard = ({ category }) => {
     };
 
     fetchArticles();
-  }, [category]);
+  }, [category, apiKey]);
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Verdana, sans-serif' }}>
