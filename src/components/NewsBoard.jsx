@@ -4,28 +4,22 @@ import NewsItem from './NewsItem';
 const NewsBoard = ({ category }) => {
   const [articles, setArticles] = useState([]);
   const [error, setError] = useState(null);
-  const apiKey = process.env.REACT_APP_API_KEY;
 
   useEffect(() => {
-    if (!apiKey) {
-      setError('API key is missing. Please check your .env file.');
-      return;
-    }
-
-    const url = `https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`;
-
     const fetchArticles = async () => {
       try {
-        const response = await fetch(url);
+        const apiKey = process.env.REACT_APP_API_KEY;
+        if (!apiKey) {
+          throw new Error('API Key is missing');
+        }
+
+        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
         }
         const data = await response.json();
-        if (data.articles) {
-          setArticles(data.articles);
-        } else {
-          setError('No articles found');
-        }
+        setArticles(data.articles || []);
       } catch (error) {
         setError('Error fetching news');
         console.error('Error fetching news:', error);
@@ -33,7 +27,7 @@ const NewsBoard = ({ category }) => {
     };
 
     fetchArticles();
-  }, [category, apiKey]);
+  }, [category]);
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Verdana, sans-serif' }}>
