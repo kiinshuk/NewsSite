@@ -9,16 +9,19 @@ const NewsBoard = ({ category }) => {
     const fetchArticles = async () => {
       try {
         const apiKey = process.env.REACT_APP_API_KEY;
-        console.log(apiKey);
+        console.log('API Key:', apiKey); // Debug API Key
         if (!apiKey) {
           throw new Error('API Key is missing');
         }
 
         const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=${apiKey}`);
+        
         if (!response.ok) {
           const errorText = await response.text();
+          console.error('Response:', errorText); // Debug response
           throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
         }
+        
         const data = await response.json();
         setArticles(data.articles || []);
       } catch (error) {
